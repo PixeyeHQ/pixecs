@@ -191,9 +191,8 @@ template impl_storage_tag*(T: typedesc) {.used.} =
 
     let temp =  st_comps[st_indices[self.id]].int - arg
     
-    
     if temp <= 0:
-      release(self)
+      remove(self, T)
     else:
       st_comps[st_indices[self.id]] = temp.T
 
