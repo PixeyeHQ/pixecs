@@ -52,6 +52,7 @@ for x in 0..<60: # sort of update loop as example :)
   if x == 10:
     player.inc TagStunned, 10
     echo "Alpaca strikes! Player is stunned for 10 ticks"
+ 
   if x == 50:
     echo "Platypus sends player to eternal sleep!"
     player.chealth.val -= 20
