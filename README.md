@@ -1,8 +1,15 @@
 # pixecs 🚀
 A pragmatic entity-component-system ([ECS](https://en.wikipedia.org/wiki/Entity_component_system)) module for my gamedev needs.
 
+[![Twitter Follow](https://img.shields.io/twitter/follow/PixeyeHQ?color=blue&label=Follow%20on%20Twitter&logo=%20&logoColor=%20&style=flat-square)](https://twitter.com/PixeyeHQ)
+[![Discord](https://img.shields.io/discord/320945300892286996.svg?label=Discord)](http://discord.pixeye.games)
+[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/dimmpixeye/Actors-Unity3d-Framework/blob/master/LICENSE)
+[![openupm](https://img.shields.io/npm/v/com.pixeye.ecs?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.pixeye.ecs/)
+[![stars](https://img.shields.io/github/stars/PixeyeHQ/actors.unity?style=social)](https://github.com/PixeyeHQ/actors.unity/stargazers)
+ 
+
 ### Introduction
-This project is a part of my future gamedev tech-stack on language called [Nim](https://nim-lang.org/), a powerful language with great promise for gamedev. Pixecs an independant module so it can be used seperately.
+This project is a part of my future gamedev tech-stack on language called [Nim](https://nim-lang.org/), a powerful language with great promise for gamedev. Pixecs an independant module so it can be used seperately. It's a ongoing project so there will be more changes and info in the future.
 
 ## ⭐ Why Pixecs ?
 Pixecs is designed as a sparse based ecs with aggressive memory consumption primarly for making pc/consoles games. Aggressive memory consumption is not a cool feature you dream of *but* there are few things I want to stress out:
@@ -11,7 +18,7 @@ Pixecs is designed as a sparse based ecs with aggressive memory consumption prim
 
 Key principles for the Pixecs are:
 - Pragmatic, [YAGNI](https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it) approach
-- Clean, non-bloated syntax (hello, rust ;)
+- Clean, non-bloated syntax
 - Good enough performance
 
 Ecs is very data driven and declarative in it's nature and normally you type a lot with this approach. Pixecs remove a lot of boilerplate code thanks to great Nim macros and templating.
@@ -65,3 +72,30 @@ for x in 0..<60: # sort of update loop as example :)
   
 ```
 ### ⚡ Performance
+Good enough for any types of games I hope. It's relatively fast and way faster then my previos [framework](https://github.com/PixeyeHQ/actors.unity) designed for Unity. 
+You can build benchmark with ```nimble bench``` to get some info.
+
+My results:
+Create 1_000_000 entities with components.
+```
+Time elapsed for Create Entity + one comp: 0.047000000 seconds
+Time elapsed for Create Entity + two comp + group: 0.104000000 seconds
+```
+Kill 1_000_000 entities with components.
+```
+Time elapsed for Kill Entity with one comp: 0.035000000 seconds
+```
+Iterate 1_000_000 entities via group/query
+```
+Time elapsed for iterate group: 0.004000000 seconds
+Time elapsed for iterate query: 0.002000000 seconds
+Time elapsed for iterate query with ent: 0.002000000 seconds
+```
+Working station: AMD Ryzen 5 2600X, 16336MB RAM  
+
+### 💬 Credits
+Developed by Dmitry Mitrofanov and every direct or indirect contributors to the GitHub.     
+Recurring contributors (2020): Dmitry Mitrofanov @PixeyeHQ
+
+### 📘 License
+Pixecs is licensed under the MIT License, see LICENSE for more information.
