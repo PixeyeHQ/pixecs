@@ -5,7 +5,7 @@ A pragmatic entity-component-system ([ECS](https://en.wikipedia.org/wiki/Entity_
 [![Discord](https://img.shields.io/discord/320945300892286996.svg?label=Discord)](http://discord.pixeye.games)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/dimmpixeye/Actors-Unity3d-Framework/blob/master/LICENSE)
 [![openupm](https://img.shields.io/npm/v/com.pixeye.ecs?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.pixeye.ecs/)
-[![stars](https://img.shields.io/github/stars/PixeyeHQ/actors.unity?style=social)](https://github.com/PixeyeHQ/actors.unity/stargazers)
+[![stars](https://img.shields.io/github/stars/PixeyeHQ/pixecs?style=social)](https://github.com/PixeyeHQ/actors.unity/stargazers)
  
 
 ### Introduction
