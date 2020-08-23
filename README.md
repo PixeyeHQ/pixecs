@@ -9,7 +9,7 @@ A pragmatic entity-component-system ([ECS](https://en.wikipedia.org/wiki/Entity_
  
 
 ### Introduction
-This project is a part of my future gamedev tech-stack on language called [Nim](https://nim-lang.org/), a powerful language with great promise for gamedev. Pixecs an independant module so it can be used seperately. It's a ongoing project so there will be more changes and info in the future.
+This project is a part of my future gamedev tech-stack on language called [Nim](https://nim-lang.org/), a powerful language with great promise for gamedev. Pixecs is an independant module so it can be used seperately. It's a ongoing project so there will be more changes and info in the future.
 
 ## ⭐ Why Pixecs ?
 Pixecs is designed as a sparse based ecs with aggressive memory consumption primarly for making pc/consoles games. Aggressive memory consumption is not a cool feature you dream of *but* there are few things I want to stress out:
