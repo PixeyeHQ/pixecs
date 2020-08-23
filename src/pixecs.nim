@@ -39,11 +39,11 @@ export ecs_h except
 proc init*(ecs: var Ecs, ent_amount: int)  =
   ecs = Ecs()
   AMOUNT_ENTS   = ent_amount
+  FREE_ENTS     = ent_amount
   groups        = newSeq[EcsGroup]()
   metas         = newSeq[EntMeta](AMOUNT_ENTS)
   metas_storage = newSeq[CompStorageMeta](0)
   ents          = newSeq[ent](AMOUNT_ENTS)
-  FREE_ENTS     = AMOUNT_ENTS
   for i in 0..<AMOUNT_ENTS:
     ents[i] = (i,1)
     metas[i].sig        = newSeqOfCap[cid](3)
