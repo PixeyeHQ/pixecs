@@ -53,9 +53,9 @@ for x in 0..<60: # sort of update loop as example :)
     echo "Alpaca strikes! Player is stunned for 10 ticks"
  
   if x == 50:
-    echo "Platypus sends player to eternal sleep!"
     player.chealth.val -= 20
-  
+    echo "Platypus sends player to eternal sleep!"
+
   for e, chealth in ecs.query(Ent, CompHealth):
     if chealth.val <= 0:
       e.kill
