@@ -20,30 +20,35 @@ func incAge*(age: var int) =
     age = 0
   else: age += 1
 
-template entity*(ecs: Ecs, code: untyped) =
+template gen_ent(): untyped =
   e1 = ents[AMOUNT_ENTS-FREE_ENTS].addr
   e2 = ents[e1.id].addr 
   FREE_ENTS -= 1
   swap(e1,e2)
+
+template entity*(ecs: Ecs, code: untyped) =
+  gen_ent()
   block:
     let e {.inject,used.} : ent = (e1.id,e2.age) #(e1.id,e2.age)
     ecs.dirty = true
     code
-    ecs.dirty = false
     ecs_group.bind(e.id.eid)
 
 template entity*(ecs: Ecs, name: untyped, code: untyped): untyped =
-  e1 = ents[AMOUNT_ENTS-FREE_ENTS].addr
-  e2 = ents[e1.id].addr
-  FREE_ENTS -= 1
-  swap(e1,e2)
+  gen_ent()
   let name {.inject,used.} : ent = (e1.id,e2.age) #ents[e2.id]
   block:
     ecs.dirty = true
     let e {.inject,used.} : ent = name
     code
-    ecs.dirty = false
     ecs_group.bind(name.id.eid)
+
+proc create*(ecs: Ecs): ent =
+  ##Keep in mind that you need to call ecs.bind after creating and setting up components
+  gen_ent()
+  ecs.dirty = true
+  (e1.id,e2.age)
+
 
 proc alive*(self:ent): bool =
   let cached = ents[self.id].addr

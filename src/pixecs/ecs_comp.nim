@@ -44,19 +44,19 @@ template impl_storage*(T: typedesc) {.used.} =
   
  #api
 
-  iterator query*(ecs:Ecs, E: typedesc[Ent], _: typedesc[T]): (eid, ptr T) {.inline.} =
+  iterator query*(ecs:Ecs, E: typedesc[Ent], _: typedesc[T]): (eid, ptr T) =
     for i in countdown(st_comps.high,0):
       yield (st_ents[i], st_comps[i].addr)
-  iterator querye*(ecs:Ecs, E: typedesc[Ent], _: typedesc[T]): eid {.inline.} =
+  iterator quere*(ecs:Ecs, E: typedesc[Ent], _: typedesc[T]): eid =
     for i in countdown(st_comps.high,0):
       yield st_ents[i]
-  iterator query*(ecs:Ecs, _: typedesc[T]): ptr T  {.inline.}=
+  iterator query*(ecs:Ecs, _: typedesc[T]): ptr T =
     for i in countdown(st_comps.high,0):
        yield st_comps[i].addr
  
   proc getId*(_:typedesc[T]): cid = st_id.cid
   
-  proc getComps*(_:typedesc[T]): ptr seq[T] {.inline.} =
+  proc getComps*(_:typedesc[T]): ptr seq[T] =
     st_comps.addr
   
   proc has*(_:typedesc[T], self: eid): bool {.inline,discardable.} =
@@ -135,13 +135,13 @@ template impl_storage_tag*(T: typedesc) {.used.} =
   
  #api
 
-  iterator query*(ecs:Ecs, E: typedesc[Ent], _: typedesc[T]): (eid, ptr T) {.inline.} =
+  iterator query*(ecs:Ecs, E: typedesc[Ent], _: typedesc[T]): (eid, ptr T) =
     for i in countdown(st_comps.high,0):
       yield (st_ents[i], st_comps[i].addr)
-  iterator querye*(ecs:Ecs, E: typedesc[Ent], _: typedesc[T]): eid {.inline.} =
+  iterator quere*(ecs:Ecs, E: typedesc[Ent], _: typedesc[T]): eid =
     for i in countdown(st_comps.high,0):
       yield st_ents[i]
-  iterator query*(ecs:Ecs, _: typedesc[T]): ptr T  {.inline.}=
+  iterator query*(ecs:Ecs, _: typedesc[T]): ptr T =
     for i in countdown(st_comps.high,0):
        yield st_comps[i].addr
  

@@ -62,19 +62,20 @@ proc iterate_query_with_ent() =
   profile.start "iterate query with ent":
     for e, ca in ecs.query(Ent,CompA):
       ca.arg += 1
-    
-entity_create_one_comp()
-entity_kill_one_comp()
 
 # create group of entities that have CompA and don't have CompB
 var players {.used.} = ecs.group(CompA,!CompB)
 var everyone {.used.} = ecs.group(CompA)
 
-entity_create_two_comp()
-iterate_group()
-iterate_query()
-iterate_query_with_ent()
+for x in 0..<25:
+  entity_create_one_comp()
+  entity_kill_one_comp()
 
+  entity_create_two_comp()
+  iterate_group()
+  iterate_query()
+  iterate_query_with_ent()
+  ecs.kill
 
 profile.log
 

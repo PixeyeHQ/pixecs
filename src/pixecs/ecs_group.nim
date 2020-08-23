@@ -192,8 +192,9 @@ template high*(self: EcsGroup): int =
 template `[]`*(self: EcsGroup, key: int): ent =
   self.ents[key]
 
-proc `bind`*(self: eid) {.inline.} =
-  let meta = metas[self.int]
+proc `bind`*(self: ent|eid) {.inline.} =
+  ecs.dirty = false
+  let meta = metas[self.id]
   for cid in meta.sig:
     let groups = metas_storage[cid].groups
     for group in groups:
