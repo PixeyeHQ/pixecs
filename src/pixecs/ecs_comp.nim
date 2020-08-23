@@ -151,7 +151,7 @@ template impl_storage_tag*(T: typedesc) {.used.} =
     st_comps.addr
   
   proc has*(_:typedesc[T], self: eid): bool {.inline,discardable.} =
-    st_indices[self.int] != ent.nil.id and st_indices[self.int] < st_ents.len
+    st_indices[self.int] < st_ents.len
   
   proc remove*(self: ent|eid, _: typedesc[T]) =
     let last = st_indices[st_ents[st_ents.high].int]
@@ -199,8 +199,6 @@ template impl_storage_tag*(T: typedesc) {.used.} =
 
   formatTagPrettyAndLong(T)
 
-
-
 macro add*(ecs: Ecs, component: untyped, mode: static[CompType] = CompType.AsComp): untyped =
   
   let node_storage = nnkCommand.newTree()
@@ -229,7 +227,6 @@ macro add*(ecs: Ecs, component: untyped, mode: static[CompType] = CompType.AsCom
       newIdentNode($component)
       ))
       result.add(node)
-
 
 macro formatTagPrettyAndLong*(T: typedesc): untyped {.used.}=
   let tName = strVal(T)
