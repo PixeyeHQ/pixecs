@@ -64,7 +64,6 @@ template impl_storage*(T: typedesc) {.used.} =
   
   proc get*(self: ent|eid, _:typedesc[T]): ptr T =
     if has(_,self):
-      echo T, " GOT IT ", self 
       return st_comps[st_indices[self.id]].addr
 
     let len = st_ents.len
