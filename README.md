@@ -72,7 +72,7 @@ for x in 0..<60: # sort of update loop as example :)
   
 ```
 ### ⚡ Performance
-Good enough for any types of games I hope. It's relatively fast and way faster then my previos [framework](https://github.com/PixeyeHQ/actors.unity) designed for Unity. 
+Good enough for any types of games I hope. It's relatively fast and way faster then my previous [framework](https://github.com/PixeyeHQ/actors.unity) designed for Unity. 
 You can build benchmark with ```nimble bench``` to get some info.
 
 My results:
