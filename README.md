@@ -82,7 +82,7 @@ The ecs is generated staticly for that amount and do not get resized in the runt
 ### 🔖 Entity
 Entities in Pixecs are tuples of id and age. There are several types that represent an entity:
 - ```ent```: a tuple of id and age. This is what you get when creating a new entity.
-- ```eid```: a plain id. This is used in iterators. The reason is simple: you don't need to check age in the iterators as you always get valid entites there so there is no reason to iterate extra value. Eid is compatible with ent type and converted automatically.
+- ```eid```: a plain id. This is used in iterators. The reason is simple: you don't need to check age in the iterators as you always get valid entites there so no reason to iterate extra value. Eid is compatible with ent type and converted automatically.
 - ```EntMeta```: this is an inhouse type for dealing with parents and childs of an entity. Also ```EntMeta``` holds info about component types used for an entity and groups that hold an entity. Developer will never touch the EntMeta directly. EntMeta keeps performance stable in a long distance when you add more and more stuff to your app.
 
 
