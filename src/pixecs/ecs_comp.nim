@@ -261,3 +261,60 @@ macro formatComponentPretty*(t: typedesc): untyped {.used.}=
         """)
 
   result = parseStmt(source)
+
+
+
+# dumpTree:
+#   var storageCompA = newSeq[CompA](10)
+
+#   proc getCompA*(i: int): ptr CompA =
+#     storageCompA[i].addr
+  
+#   iterator query*(ecs:Ecs, _: CompA): ptr CompA =
+#     for i in countdown(storageCompA.high,0):
+#        yield storageCompA[i].addr
+
+macro buildComp*(T:untyped, size: static int): untyped =
+  let n = newStmtList()
+  
+  # build storage
+  let n1 = nnkVarSection.newTree(
+    nnkIdentDefs.newTree(
+      ident(&"storage{T}"),
+      newEmptyNode(),
+      newCall(nnkBracketExpr.newTree(ident("newSeq"),ident(&"{T}")),newIntLitNode(size))))
+  let n2 = nnkProcDef.newTree(
+    nnkPostfix.newTree(
+      ident("*"),
+      ident(&"get{T}")
+    ),
+    newEmptyNode(),
+    newEmptyNode(),
+    nnkFormalParams.newTree(
+      nnkPtrTy.newTree(
+        ident(&"{T}")
+      ),
+      nnkIdentDefs.newTree(
+        ident("i"),
+        ident("int"),
+        newEmptyNode()
+      )
+    ),
+      newEmptyNode(),
+      newEmptyNode(),
+      nnkStmtList.newTree(
+        nnkDotExpr.newTree(
+          nnkBracketExpr.newTree(
+            ident(&"storage{T}"),
+            ident("i")
+          ),
+          ident("addr")
+        )
+      )
+      )
+  # build storageGetter
+  n.insert(0,n1)
+  n.insert(1,n2)
+ 
+
+  result = n
