@@ -71,6 +71,42 @@ for x in 0..<60: # sort of update loop as example :)
     echo e, " is stunned and can't move"
   
 ```
+## 📖 Overview
+### 🔖 Initialization
+To initialize you need to call 
+```nim 
+ecs.init(AMOUNT_OF_ENTITIES) # where AMOUNT_OF_ENTITIES is desired number of entities you want in the game.
+```
+The ecs is generated staticly for that amount and do not get resized in the runtime of your app. 
+
+### 🔖 Entity
+Entities in Pixecs are tuples of id and age. There are several types that represent an entity:
+- ```ent```: a tuple of id and age. This is what you get when creating a new entity.
+- ```eid```: a plain id. This is used in iterators. The reason is simple: you don't need to check age in the iterators as you always get valid entites there so there is no reason to iterate extra value. Eid is compatible with ent type and converted automatically.
+- ```EntMeta```: this is an inhouse type for dealing with parents and childs of an entity. Also ```EntMeta``` holds info about component types used for an entity and groups that hold an entity. Developer will never touch the EntMeta directly. EntMeta keeps performance stable in a long distance when you add more and more stuff to your app.
+
+
+### 🔖 Component
+In Pixecs you generate api, storage and aliases for a component by calling ```ecs.add YOUR_TYPE```
+```nim
+# define object type
+type CompHealth* = object
+  val* : int
+
+# generate api, storage and aliases for the component
+ecs.add CompHealth
+```
+Now you can use the CompHealth with entities.
+```nim
+let player : ent # some entity. for brevity we will assume that it's defined somewhere.
+player.chealth.val = 10 # valid short name alias. It's the same name as type but word Component/Comp is shortened to c.
+player.compHealth.val = 10 # valid long name alias. It's the same name as type but with first letter lowercased.
+```
+
+> 💡 *The short alias is generated only if you use Component or Comp in the name of a type. This is a part of my style how to write code and I don't force people to write like that.*
+
+
+
 ### ⚡ Performance
 Good enough for any types of games I hope. It's relatively fast and way faster then my previous [framework](https://github.com/PixeyeHQ/actors.unity) designed for Unity. 
 You can build benchmark with ```nimble bench``` to get some info.
