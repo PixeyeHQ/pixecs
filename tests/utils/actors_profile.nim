@@ -44,13 +44,13 @@ template log*(this: Profile): untyped=
             let arg2 {.inject.} = pe.total_time
             let arg3 {.inject.} =  pe.total_calls
             if pe.total_calls>1:
-                let elapsedStr{.inject.} = formatFloat(arg2 / arg3.float,format = ffDecimal,precision = 9)
-                let elapsedStr0{.inject.} = formatFloat(arg2,format = ffDecimal,precision = 9)
+                let elapsedStr{.inject.} = formatFloat(arg2 / arg3.float,format = ffDecimal,precision = 12)
+                let elapsedStr0{.inject.} = formatFloat(arg2,format = ffDecimal,precision = 12)
                 if i==index:
                     benches.add(&"Time elapsed for {arg1}: {elapsedStr0} seconds over {arg3} iterations, averaging: {elapsedStr} seconds\n")
                 else: benches.add(&"Time elapsed for {arg1}: {elapsedStr0} seconds over {arg3} iterations, averaging: {elapsedStr} seconds\n") 
             else:
-                let elapsedStr{.inject.} = formatFloat(arg2,format = ffDecimal,precision = 9)
+                let elapsedStr{.inject.} = formatFloat(arg2,format = ffDecimal,precision = 12)
                 if i==index:
                     benches.add(&"Time elapsed for {arg1}: {elapsedStr} seconds\n")
                 else: benches.add(&"Time elapsed for {arg1}: {elapsedStr} seconds\n")    

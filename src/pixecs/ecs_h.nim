@@ -2,7 +2,7 @@ import strutils
 
 var AMOUNT_ENTS*  = 0
 var FREE_ENTS*    = 0
-
+var next_storage_id* = 0
 type #@atomic 
   
   ent* = tuple[id: int, age: int]
