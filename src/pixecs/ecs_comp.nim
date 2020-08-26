@@ -47,7 +47,7 @@ template impl_storage*(T: typedesc) {.used.} =
   iterator query*(ecs:Ecs, E: typedesc[Ent], _: typedesc[T]): (eid, ptr T) =
     for i in countdown(st_comps.high,0):
       yield (st_ents[i], st_comps[i].addr)
-  iterator quere*(ecs:Ecs, E: typedesc[Ent], _: typedesc[T]): eid =
+  iterator quere*(ecs:Ecs, _: typedesc[T]): eid =
     for i in countdown(st_comps.high,0):
       yield st_ents[i]
   iterator query*(ecs:Ecs, _: typedesc[T]): ptr T =
@@ -138,7 +138,7 @@ template impl_storage_tag*(T: typedesc) {.used.} =
   iterator query*(ecs:Ecs, E: typedesc[Ent], _: typedesc[T]): (eid, ptr T) =
     for i in countdown(st_comps.high,0):
       yield (st_ents[i], st_comps[i].addr)
-  iterator quere*(ecs:Ecs, E: typedesc[Ent], _: typedesc[T]): eid =
+  iterator quere*(ecs:Ecs, _: typedesc[T]): eid =
     for i in countdown(st_comps.high,0):
       yield st_ents[i]
   iterator query*(ecs:Ecs, _: typedesc[T]): ptr T =
