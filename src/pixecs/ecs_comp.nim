@@ -9,7 +9,7 @@ import ecs_h
 var next_storage_id = 0
 
 
-template impl_storage*(T: typedesc) {.used.} =
+template impl_storage(T: typedesc) {.used.} =
   var st_id   : int
   var st_indices : seq[int]
   var st_ents    : seq[eid]
@@ -98,7 +98,7 @@ template impl_storage*(T: typedesc) {.used.} =
   formatComponentPretty(T)
   formatComponentPrettyAndLong(T)
 
-template impl_storage_tag*(T: typedesc) {.used.} =
+template impl_storage_tag(T: typedesc) {.used.} =
   var st_id   : int
   var st_indices : seq[int]
   var st_ents    : seq[eid]
