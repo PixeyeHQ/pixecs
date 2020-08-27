@@ -17,7 +17,8 @@ export ecs_h except
   EcsGroup,
   CompStorageMeta,
   IStorage,
-  EntMeta
+  EntMeta,
+  meta
 
 
 
