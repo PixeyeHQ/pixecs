@@ -58,7 +58,7 @@ for x in 0..<60: # sort of update loop as example :)
 
   for e, chealth in ecsQuery(Ent, CompHealth):
     if chealth.val <= 0:
-      e.kill
+      e.release
       echo e, " got killed"
 
   for e in ecsGroup(CompMotion,!TagStunned):
