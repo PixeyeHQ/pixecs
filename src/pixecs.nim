@@ -8,50 +8,35 @@ import pixecs/ecs_ent
 import pixecs/ecs_comp
 import pixecs/ecs_group
 
-# Importing/Exporting is something I don't get in Nim. The routine below must be refactoredm
-# but I don't know how yet. Excepting 2/3 of elements is insane. 
-export
-  ecs_comp,
-  ecs_group,
-  ecs_ent
-
-export ecs_group except
-  updateGroups,
-  binarysearch,
-  init_group,
-  partof,
-  match,
-  insert,
-  remove,
-  `bind`
+#Importing/Exporting is something I don't get in Nim. By default all inhouse stuff
+#is marked with px_ecs_
+export ecs_comp
+export ecs_group
+export ecs_ent
 export ecs_h except
-  init_indices,
-  formatComponentAlias,
-  formatComponent,
-  formatComponentLong,
-  formatComponentPrettyAndLong,
-  formatComponentPretty,
-  meta,
-  metas,
-  ents
+  EcsGroup,
+  CompStorageMeta,
+  IStorage,
+  EntMeta
 
 
-proc init*(ecs: var Ecs, ent_amount: int)  =
-  ecs = Ecs()
+
+proc ecsInit*(ent_amount: int)  =
   AMOUNT_ENTS   = ent_amount
   FREE_ENTS     = ent_amount
-  groups        = newSeq[EcsGroup]()
-  metas         = newSeq[EntMeta](AMOUNT_ENTS)
-  metas_storage = newSeq[CompStorageMeta](0)
-  ents          = newSeq[ent](AMOUNT_ENTS)
+  PX_ECS_DEFAULT_GROUP_SIZE = (AMOUNT_ENTS/2).int
+  px_ecs_groups        = newSeq[EcsGroup]()
+  px_ecs_meta          = newSeq[EntMeta](AMOUNT_ENTS)
+  px_ecs_meta_comp     = newSeq[CompStorageMeta](0)
+  px_ecs_ents          = newSeq[ent](AMOUNT_ENTS)
   for i in 0..<AMOUNT_ENTS:
-    ents[i] = (i,1)
-    metas[i].sig        = newSeqOfCap[cid](3)
-    metas[i].sig_groups = newSeqOfCap[cid](1)
-    metas[i].childs = newSeqOfCap[eid](0)
-    metas[i].parent = ent.nil
+    px_ecs_ents[i] = (i,1)
+    px_ecs_meta[i].sig        = newSeqOfCap[cid](3)
+    px_ecs_meta[i].sig_groups = newSeqOfCap[cid](1)
+    px_ecs_meta[i].childs = newSeqOfCap[eid](0)
+    px_ecs_meta[i].parent = ent.nil
 
 
-iterator all*(self:Ecs): eid =
-  for i in countdown(ents.high,0):
-    yield ents[i].id.eid
+iterator ecsAll*: eid =
+  for i in countdown(px_ecs_ents.high,0):
+    yield px_ecs_ents[i].id.eid
