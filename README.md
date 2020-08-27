@@ -34,13 +34,13 @@ type CompMotion* = object
   speed* : float
 type TagStunned* = distinct int
 
-ecs.init(1_000_000)
+ecsInit(1_000_000)
 
-ecs.add CompHealth
-ecs.add CompMotion
-ecs.add TagStunned, AsTag
+ecsAdd CompHealth
+ecsAdd CompMotion
+ecsAdd TagStunned, AsTag
 
-ecs.entity player:
+ecsEntity player:
   let chealth = player.get CompHealth
   let cmotion = player.get CompMotion
   chealth.val = 10
@@ -56,17 +56,17 @@ for x in 0..<60: # sort of update loop as example :)
     player.chealth.val -= 20
     echo "Platypus sends player to eternal sleep!"
 
-  for e, chealth in ecs.query(Ent, CompHealth):
+  for e, chealth in ecsQuery(Ent, CompHealth):
     if chealth.val <= 0:
       e.kill
       echo e, " got killed"
 
-  for e in ecs.group(CompMotion,!TagStunned):
+  for e in ecsGroup(CompMotion,!TagStunned):
     let cmotion = e.compMotion
     cmotion.x += cmotion.speed
     echo e, "is moving to x: ", cmotion.x
     
-  for e in ecs.group(TagStunned):
+  for e in ecsGroup(TagStunned):
     e.dec TagStunned
     echo e, " is stunned and can't move"
   
@@ -75,7 +75,7 @@ for x in 0..<60: # sort of update loop as example :)
 ### 🔖 Initialization
 To initialize you need to call 
 ```nim 
-ecs.init(AMOUNT_OF_ENTITIES) # where AMOUNT_OF_ENTITIES is desired number of entities you want in the game.
+ecsInit(AMOUNT_OF_ENTITIES) # where AMOUNT_OF_ENTITIES is desired number of entities you want in the game.
 ```
 The ecs is generated staticly for that amount and do not get resized in the runtime of your app. 
 
@@ -87,14 +87,14 @@ Entities in Pixecs are tuples of id and age. There are several types that repres
 
 
 ### 🔖 Component
-In Pixecs you generate api, storage and aliases for a component by calling ```ecs.add YOUR_TYPE```
+In Pixecs you generate api, storage and aliases for a component by calling ```ecsAdd YOUR_TYPE```
 ```nim
 # define object type
 type CompHealth* = object
   val* : int
 
 # generate api, storage and aliases for the component
-ecs.add CompHealth
+ecsAdd CompHealth
 ```
 Now you can use the CompHealth with entities.
 ```nim
