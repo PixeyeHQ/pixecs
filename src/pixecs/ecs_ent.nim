@@ -24,6 +24,7 @@ template px_ecs_ent(): untyped =
   e2 = px_ecs_ents[e1.id].addr 
   FREE_ENTS -= 1
   swap(e1,e2)
+  
 
 template ecsEntity*(code: untyped) =
   px_ecs_ent()

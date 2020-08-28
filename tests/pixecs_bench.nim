@@ -15,23 +15,25 @@ type TagHit* = distinct int
 # The size of entities doesn't change so allocate as much as you need.
 # Also keep in mind that in this ecs there is no 'WORLD' concept. You have only one registry.
 # This is may change in future but I don't see the point for multiword stuff right now.  
-ecsInit(1_000_000) 
-log "Initialize ecs fo 1 000 000 entities"
+log.add "app.log"
+ecsInit(1) 
+log.info "Initialize ecs fo 1 000 000 entities"
 # Register components
 
 ecsAdd CompA
 ecsAdd CompB
 ecsAdd CompC
 
+
 proc entity_create_one_comp() =
-  profile.start "Create Entity + one comp":
+  profileStart "Entity Create  [1comp]":
     for x in 0..<AMOUNT_ENTS:
       ecsEntity:
         let ca = e.get CompA
         ca.arg = 10
 
 proc entity_create_two_comp() =
-  profile.start "Create Entity + two comp + group":
+  profileStart "Create Entity + two comp + group":
     for x in 0..<AMOUNT_ENTS:
       ecsEntity:
         let ca = e.get CompA
@@ -40,24 +42,24 @@ proc entity_create_two_comp() =
         cb.arg = 10
 
 proc entity_kill_one_comp() =
-  profile.start "Kill Entity with one comp":
+  profileStart "Entity Release [1comp]":
     for e in ecsAll():
       e.release
 
 proc iterate_group() =
-  profile.start "iterate group":
+  profileStart "iterate group":
     # you can iterate through cached group or get one dynamically. it's the same.
     for e in ecsGroup(CompA):
       let ca = e.compA
       ca.arg+=1
 
 proc iterate_query() =
-  profile.start "iterate query":
+  profileStart "iterate query":
     for ca in ecsQuery(CompA):
         ca.arg += 1
 
 proc iterate_query_with_ent() =
-  profile.start "iterate query with ent":
+  profileStart "iterate query with ent":
     for e, ca in ecsQuery(Ent,CompA):
       ca.arg += 1
 
@@ -66,18 +68,22 @@ var players {.used.} = ecsGroup(CompA,!CompB)
 var everyone {.used.} = ecsGroup(CompA)
 
 
-for x in 0..<25:
+for x in 0..<1:
   entity_create_one_comp()
   entity_kill_one_comp()
 
-  entity_create_two_comp()
-  iterate_group()
-  iterate_query()
-  iterate_query_with_ent()
-  ecsRelease()
+proc test2() = log.trace "This is a TEST"
+
+proc test() = test2()
+
+test()
+
+  # entity_create_two_comp()
+  # iterate_group()
+  # iterate_query()
+  # iterate_query_with_ent()
+  # ecsRelease()
 
 
-
-profile.log
-
+profileLog()
 

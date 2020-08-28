@@ -1,70 +1,68 @@
-{.used.}
+## Created by Pixeye | dev@pixeye.com   
+##
+## This module is used for measuring performance.
+##
+## * ``profileStart "name": code`
+## * ``profileLog``
+## * ``profileClear``
 
+
+{.used.}
 import times
+import std/monotimes
 import strformat
 import tables
 import strutils
 
 import actors_log
 
-
-type ProfileElement = tuple
+type ProfileElement = object
   name: string
-  t0, t1: float
+  t0, t1: MonoTime
   total_calls: int
-  total_time: float
-type Profile = object
+  total_time: int64
+  cache: seq[Duration]
 
+var pairs = initTable[string,ProfileElement]()
 
-var profile* : Profile
-var  index   : int
-var  pairs   = initTable[string,ProfileElement]()
+proc profile_start(arg: string): ptr ProfileElement {.inline.} =
+  if not pairs.hasKey(arg):
+   var el: ProfileElement   
+   pairs.add(arg,el)
+  let el = addr pairs[arg]
+  el.t0 = getMonoTime()
+  el.name = arg
+  el
 
+proc profile_end(el: ptr ProfileElement) {.inline.} =
+  el.t1 = getMonoTime()
+  var v = el.t1-el.t0
+  el.total_time += v.inNanoseconds
+  el.total_calls+=1
+  el.cache.add(v)
 
-template profileStart(arg: string) =
-    if not pairs.hasKey(arg):
-     var el: ProfileElement   
-     pairs.add(arg,el)
-     index+=1
-    pairs[arg].name = arg
-    pairs[arg].t0 = cpuTime()
+proc profileLog*()= 
+  var benches = ""
+  for pe in pairs.mvalues:
+      let elapsed_raw = pe.total_time.float64/1000000000.float64
+      let total =  pe.total_calls
+      if pe.total_calls>1:
+          let elapsed     = formatFloat(elapsed_raw,format = ffDecimal,precision = 4)
+          let elapsed_avr = formatFloat(elapsed_raw / total.float64,format = ffDecimal,precision = 9)
+          let elapsed_min = formatFloat(pe.cache.min.inNanoseconds.float64/1000000000.float64,format = ffDecimal,precision = 9)
+          let elapsed_max = formatFloat(pe.cache.max.inNanoseconds.float64/1000000000.float64,format = ffDecimal,precision = 9)
+          benches.add(&"⯈ {pe.name}: {elapsed}s -> {total} iterations, avg: {elapsed_avr}s min: {elapsed_min}s max: {elapsed_max}s\n")
+      else:
+          let elapsed     = formatFloat(elapsed_raw,format = ffDecimal,precision = 9)
+          benches.add(&"⯈ {pe.name}: {elapsed}s\n")
+  log.benchmark benches 
 
-template profileEnd(name:string) =
-    var el = addr pairs[name]
-    el.t1 = cpuTime()
-    el.total_time+=el.t1-el.t0
-    el.total_calls+=1
-
-template log*(this: Profile): untyped= 
-    var benches : string
-    block:
-        var i: int
-        for pe in pairs.values:
-            let arg1 {.inject.} = pe.name
-            let arg2 {.inject.} = pe.total_time
-            let arg3 {.inject.} =  pe.total_calls
-            if pe.total_calls>1:
-                let elapsedStr{.inject.} = formatFloat(arg2 / arg3.float,format = ffDecimal,precision = 9)
-                let elapsedStr0{.inject.} = formatFloat(arg2,format = ffDecimal,precision = 9)
-                if i==index:
-                    benches.add(&"Time elapsed for {arg1}: {elapsedStr0} seconds over {arg3} iterations, averaging: {elapsedStr} seconds\n")
-                else: benches.add(&"Time elapsed for {arg1}: {elapsedStr0} seconds over {arg3} iterations, averaging: {elapsedStr} seconds\n") 
-            else:
-                let elapsedStr{.inject.} = formatFloat(arg2,format = ffDecimal,precision = 9)
-                if i==index:
-                    benches.add(&"Time elapsed for {arg1}: {elapsedStr} seconds\n")
-                else: benches.add(&"Time elapsed for {arg1}: {elapsedStr} seconds\n")    
-
-            i+=1
-        log benchmark, benches 
-        index = 0
-
-template start*(this: Profile,benchmarkName: string, code: untyped): untyped  =
+template profileStart*(benchmarkName: string, code: untyped): untyped  =
   block:
-    profileStart(benchmarkName)
+    let el = profile_start(benchmarkName)
     code
-    profileEnd(benchmarkName) 
+    profile_end(el) 
 
-proc clear*(this: Profile)=
-    pairs = initTable[string,ProfileElement]()
+proc profileClear*()=
+  pairs = initTable[string,ProfileElement]()
 

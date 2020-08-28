@@ -1,0 +1,10 @@
+22:04:44 Info:  [pixecs_bench] Initialize ecs fo 1 000 000 entities
+22:04:44 Trace: This is a TEST
+⯆ c:\Users\Pixeye\projects\pixecs\tests\pixecs_bench.nim (79) pixecs_bench
+⯆ c:\Users\Pixeye\projects\pixecs\tests\pixecs_bench.nim (77) test
+⯈ c:\Users\Pixeye\projects\pixecs\tests\pixecs_bench.nim (75) test2
+22:04:44 Benchmark:
+⯈ Entity Release [1comp]: 0.000008400s
+⯈ Entity Create  [1comp]: 0.000014500s
+
+

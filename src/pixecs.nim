@@ -1,15 +1,13 @@
-#[
-  Created by Mitrofanov Dmitry "Pixeye" on 20/08/2020 
-  Email: dev@pixeye.com
-]#
+## Created by Pixeye | dev@pixeye.com
+##
+## Entity-Component-System (ECS) module.
+
 
 import pixecs/ecs_h
 import pixecs/ecs_ent
 import pixecs/ecs_comp
 import pixecs/ecs_group
 
-#Importing/Exporting is something I don't get in Nim. By default all inhouse stuff
-#is marked with px_ecs_
 export ecs_comp
 export ecs_group
 export ecs_ent
