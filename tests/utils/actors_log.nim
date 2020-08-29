@@ -54,10 +54,10 @@ template DEBUG_MODE(code: untyped): untyped=
   when not defined(release) and not defined(danger):
     code
 
-var t_msg = Msg(kind: Trace)
-var w_msg = Msg(kind: Write)
+
 
 proc px_trace_send(lvl: uint8 = 0, args: varargs[string, `$`]) = 
+  var t_msg = Msg(kind: Trace)
   t_msg.t_lvl = lvl
   if lvl == lv_debug:
     let tr = getStackTraceEntries()
@@ -69,6 +69,7 @@ proc px_trace_send(lvl: uint8 = 0, args: varargs[string, `$`]) =
   channel.send t_msg
 
 proc px_log_send*(lvl: uint8 = 0, args: varargs[string, `$`]) = 
+  var w_msg = Msg(kind: Write)
   w_msg.w_lvl = lvl
   w_msg.w_txt.setLen(0)
   for arg in args:
