@@ -2,7 +2,7 @@
 ##
 ## This module is used for measuring performance.
 ##
-## * ``profileStart "name": code`
+## * ``profile "name": code`
 ## * ``profileLog``
 ## * ``profileClear``
 
@@ -13,7 +13,7 @@ import std/monotimes
 import strformat
 import tables
 import strutils
-
+import hashes
 import actors_log
 
 type ProfileElement = object
@@ -23,13 +23,13 @@ type ProfileElement = object
   total_time: int64
   cache: seq[Duration]
 
-var pairs = initTable[string,ProfileElement]()
+var pairs = initTable[int,ProfileElement]()
 
 proc profile_start(arg: string): ptr ProfileElement {.inline.} =
-  if not pairs.hasKey(arg):
+  if not pairs.hasKey(arg.hash):
    var el: ProfileElement   
-   pairs.add(arg,el)
-  let el = addr pairs[arg]
+   pairs.add(arg.hash,el)
+  let el = addr pairs[arg.hash]
   el.t0 = getMonoTime()
   el.name = arg
   el
@@ -41,25 +41,7 @@ proc profile_end(el: ptr ProfileElement) {.inline.} =
   el.total_calls+=1
   el.cache.add(v)
 
-# proc profile*() =
-#   var benches = ""
-#   for pe in pairs.mvalues:
-#       let elapsed_raw = pe.total_time.float64/1000000000.float64
-#       let total =  pe.total_calls
-#       if pe.total_calls>1:
-#           let elapsed     = formatFloat(elapsed_raw,format = ffDecimal,precision = 4)
-#           let elapsed_avr = formatFloat(elapsed_raw / total.float64,format = ffDecimal,precision = 9)
-#           let elapsed_min = formatFloat(pe.cache.min.inNanoseconds.float64/1000000000.float64,format = ffDecimal,precision = 9)
-#           let elapsed_max = formatFloat(pe.cache.max.inNanoseconds.float64/1000000000.float64,format = ffDecimal,precision = 9)
-#           benches.add(&"⯈ {pe.name}: {elapsed}s -> {total} iterations, avg: {elapsed_avr}s min: {elapsed_min}s max: {elapsed_max}s\n")
-#       else:
-#           let elapsed     = formatFloat(elapsed_raw,format = ffDecimal,precision = 9)
-#           benches.add(&"⯈ {pe.name}: {elapsed}s\n")
-  
-
-
-
-proc logProfile*()= 
+proc profileLog*()= 
   var benches = ""
   for pe in pairs.mvalues:
       let elapsed_raw = pe.total_time.float64/1000000000.float64
@@ -73,17 +55,17 @@ proc logProfile*()=
       else:
           let elapsed     = formatFloat(elapsed_raw,format = ffDecimal,precision = 9)
           benches.add(&"⯈ {pe.name}: {elapsed}s\n")
-  logBench benches 
+  px_log_bench benches 
 
-proc profileLog*()= 
-  logProfile() 
+proc logProfile*()= 
+  profileLog() 
 
-template profileStart*(benchmarkName: string, code: untyped): untyped  =
+template profile*(benchmarkName: string, code: untyped): untyped  =
   block:
     let el = profile_start(benchmarkName)
     code
     profile_end(el) 
 
 proc profileClear*()=
-  pairs = initTable[string,ProfileElement]()
+  pairs = initTable[int,ProfileElement]()
 

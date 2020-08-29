@@ -15,8 +15,9 @@ type TagHit* = distinct int
 # The size of entities doesn't change so allocate as much as you need.
 # Also keep in mind that in this ecs there is no 'WORLD' concept. You have only one registry.
 # This is may change in future but I don't see the point for multiword stuff right now.  
-logadd "app.log"
-ecsInit(1) 
+logAdd stdout
+
+ecsInit(1_000_000) 
 logInfo "Initialize ecs fo 1 000 000 entities"
 # Register components
 
@@ -26,14 +27,14 @@ ecsAdd CompC
 
 
 proc entity_create_one_comp() =
-  profileStart "Entity Create  [1comp]":
+  profile "Entity Create  [1comp]":
     for x in 0..<AMOUNT_ENTS:
       ecsEntity:
         let ca = e.get CompA
         ca.arg = 10
 
 proc entity_create_two_comp() =
-  profileStart "Create Entity + two comp + group":
+  profile "Create Entity + two comp + group":
     for x in 0..<AMOUNT_ENTS:
       ecsEntity:
         let ca = e.get CompA
@@ -42,24 +43,24 @@ proc entity_create_two_comp() =
         cb.arg = 10
 
 proc entity_kill_one_comp() =
-  profileStart "Entity Release [1comp]":
+  profile "Entity Release [1comp]":
     for e in ecsAll():
       e.release
 
 proc iterate_group() =
-  profileStart "iterate group":
+  profile "iterate group":
     # you can iterate through cached group or get one dynamically. it's the same.
     for e in ecsGroup(CompA):
       let ca = e.compA
       ca.arg+=1
 
 proc iterate_query() =
-  profileStart "iterate query":
+  profile "iterate query":
     for ca in ecsQuery(CompA):
         ca.arg += 1
 
 proc iterate_query_with_ent() =
-  profileStart "iterate query with ent":
+  profile "iterate query with ent":
     for e, ca in ecsQuery(Ent,CompA):
       ca.arg += 1
 

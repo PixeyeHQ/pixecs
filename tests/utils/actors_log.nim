@@ -6,7 +6,6 @@
 import times
 import strutils
 import strformat
-import typeinfo
 import system
 
 type Logger* = object
@@ -18,19 +17,17 @@ type MsgKind = enum
 type Msg = object
   case kind: MsgKind
   of Write:
-    w_code : string
     w_txt  : string
-    w_line : int
     w_lvl  : uint8
   of Trace:
     t_stack: seq[StackTraceEntry]
     t_txt  : string
     t_lvl  : uint8
   of Update:
-    u_logs: seq[Logger]
+    u_logs: ptr seq[Logger]
+    u_log_std : Logger
   of Stop:
     nil
-
 
 const lv_trace = 0'u8
 const lv_debug = 1'u8
@@ -44,43 +41,40 @@ const names    : array[6, string] = ["Trace", "Debug"," Info"," Warn","Error", "
 
 const log_template = "$# $# $#$#"
 const log_template_std = "$# $#$#"
-const log_template_std_trace = "$#, $#$#$#"
 const log_template_bench = "$# $#\n$#\n" 
 const log_template_std_bench = "$#\n$#\n" 
 
 var thread  : Thread[void]
 var channel : Channel[Msg]
 var logs    : seq[Logger]
+var log_std : Logger
 
+var t1* = 0.0f
 template DEBUG_MODE(code: untyped): untyped=
   when not defined(release) and not defined(danger):
     code
 
-proc px_log_add(file:File) =
-  logs.add Logger(file: file)
-  channel.send Msg(kind: Update, u_logs: logs)
+var t_msg = Msg(kind: Trace)
+var w_msg = Msg(kind: Write)
 
 proc px_trace_send(lvl: uint8 = 0, args: varargs[string, `$`]) = 
-  var msg = Msg(kind: Trace)
-  msg.t_lvl = lvl
+  t_msg.t_lvl = lvl
   if lvl == lv_debug:
     let tr = getStackTraceEntries()
-    msg.t_stack = @[tr[tr.high-1]]
-  else: msg.t_stack = getStackTraceEntries()
+    t_msg.t_stack = @[tr[tr.high-1]]
+  else: t_msg.t_stack = getStackTraceEntries()
+  t_msg.t_txt.setLen(0)
   for arg in args:
-    msg.t_txt.add arg
-    #msg.t_txt.add "\n"
-  channel.send msg
+    t_msg.t_txt.add arg
+  channel.send t_msg
 
-proc px_log_send(lvl: uint8 = 0, code: string, line: int, args: varargs[string, `$`]) = 
-  var msg = Msg(kind: Write)
-  msg.w_lvl = lvl
-  msg.w_line = line
-  msg.w_code = code
+proc px_log_send*(lvl: uint8 = 0, args: varargs[string, `$`]) = 
+  w_msg.w_lvl = lvl
+  w_msg.w_txt.setLen(0)
   for arg in args:
-    msg.w_txt.add arg
-    msg.w_txt.add "\n"
-  channel.send msg
+    w_msg.w_txt.add arg
+    w_msg.w_txt.add "\n"
+  channel.send w_msg
 
 proc px_log_stop {.noconv.} =
   channel.send Msg(kind: Stop)
@@ -92,20 +86,21 @@ proc px_log_stop {.noconv.} =
 
 proc px_log_execute() {.thread.} =
   var 
-    logs = newSeq[Logger]()
+    logs : seq[Logger]
+    log_std : Logger
     time_prev: Time
     time_str = ""
   while true:
     let msg = recv channel
     case msg.kind
     of Update:
-      logs = msg.u_logs
+      logs = msg.u_logs[]
+      log_std = msg.u_log_std
     of Write:
       let time_new = getTime()
       if time_new != time_prev:
         time_prev = time_new
         time_str = local(time_new).format "HH:mm:ss"
-      
       var text_log = ""
       var text_log_std =""
       if msg.w_lvl == lv_bench: 
@@ -115,25 +110,23 @@ proc px_log_execute() {.thread.} =
         text_log = log_template % [time_str,names[msg.w_lvl],"",msg.w_txt]
         text_log_std= log_template_std % [names_std[msg.w_lvl],"",msg.w_txt]
 
-      for i in 1..logs.high:
+      for i in 0..logs.high:
         let log = logs[i].addr
         log.file.write text_log
         if channel.peek == 0:
           log.file.flushFile
       
-      let log = logs[0].addr
-      log.file.write text_log_std
-      if channel.peek == 0:
-          log.file.flushFile
+      if not log_std.file.isNil:
+        log_std.file.write text_log_std
+        if channel.peek == 0:
+            log_std.file.flushFile
 
     of Trace:
       let time_new = getTime()
       if time_new != time_prev:
         time_prev = time_new
         time_str = local(time_new).format "HH:mm:ss"
-      let n = msg.t_stack[msg.t_stack.high]
-      let tr = &"{n.filename} ({n.line})"
-            
+
       var text_log = ""
       var text_log_std = ""
       var text_trace = ""
@@ -159,73 +152,53 @@ proc px_log_execute() {.thread.} =
         text_log.add(text_trace)
         text_log_std.add(text_trace)
 
-      for i in 1..logs.high:
+      for i in 0..logs.high:
         let log = logs[i].addr
         log.file.write text_log
         if channel.peek == 0:
           log.file.flushFile
       
-      let log = logs[0].addr
-      log.file.write text_log_std
-      if channel.peek == 0:
-          log.file.flushFile
+      if not log_std.file.isNil:
+        log_std.file.write text_log_std
+        if channel.peek == 0:
+            log_std.file.flushFile
 
     of Stop:
       break 
 
-  #var module = instantiationInfo()
-  #echo module
-  # var traces = getStackTraceEntries()
-  # var sym = "⯆"
-  # for i in 0..traces.high-1:
-  #   var n  =  traces[i]
-  #   if i==traces.high-1:
-  #     sym = "⯈"
-  #   echo &"{sym} {n.filename} ({n.line}) {n.procname} "
-  # var trace_text = "  ⮡ "
-  # for arg in args:
-  #   trace_text.add(arg)
+template px_log_bench*(args: varargs[string, `$`]) =
+    px_log_send(lv_bench, args)
 
-  # echo trace_text
+proc logAdd*(file:File) =
+  if file == stdout:
+    log_std = Logger(file: file)
+  else:
+    logs.add Logger(file: file)
+  channel.send Msg(kind: Update, u_logs: logs.addr, u_log_std: log_std)
+
 proc logAdd*(file_name: string) =
   if file_name == "":
     echo "no file"
     return
-  px_log_add(open(file_name,fmWrite))
+  logAdd(open(file_name,fmWrite))
 
 template log*(args: varargs[string, `$`]) =
   DEBUG_MODE:
     px_trace_send(lv_debug, args)
+
 template logTrace*(args: varargs[string, `$`]) =
   DEBUG_MODE:
     px_trace_send(lv_trace, args)
 
-# template logDebug*(args: varargs[string, `$`]) =
-#   DEBUG_MODE:
-#     px_trace_send(lv_debug, args)
-
 template logInfo*(args: varargs[string, `$`]) =
-    const module = instantiationInfo()
-    px_log_send(lv_info, module.filename[0 .. ^5], module.line, args)
+    px_log_send(lv_info,  args)
 
 template logWarn*(args: varargs[string, `$`]) =
-    const module = instantiationInfo()
-    px_log_send(lv_warn, module.filename[0 .. ^5], module.line, args)
-
-template logBench*(args: varargs[string, `$`]) =
-    px_log_send(lv_bench, "", 0, args)
+    px_log_send(lv_warn, args)
 
 template logError*( args: varargs[string, `$`]) =
     px_trace_send(lv_error, args)
 
-
-#proc `log`*(args: varargs[string, `$`]) = discard
-
-
-
 open channel
-thread.createThread px_log_execute
-
-px_log_add(stdout)
-
+createThread thread, px_log_execute
 addQuitProc px_log_stop
