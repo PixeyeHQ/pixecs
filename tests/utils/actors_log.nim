@@ -9,8 +9,6 @@ import strformat
 import typeinfo
 import system
 
-type Log* = object
-
 type Logger* = object
   file: File
 
@@ -25,15 +23,14 @@ type Msg = object
     w_line : int
     w_lvl  : uint8
   of Trace:
-    t_txt  : string
     t_stack: seq[StackTraceEntry]
+    t_txt  : string
     t_lvl  : uint8
   of Update:
     u_logs: seq[Logger]
   of Stop:
     nil
 
-const log* = Log()
 
 const lv_trace = 0'u8
 const lv_debug = 1'u8
@@ -42,11 +39,11 @@ const lv_warn  = 3'u8
 const lv_error = 4'u8
 const lv_bench = 5'u8
 
-const names_std: array[6, string] = ["\e[0;32mTrace:\e[39m","\e[0;32mDebug:\e[39m","\e[0;36mInfo: \e[39m","\e[0;33mWarn: \e[39m","\e[0;31mError:\e[39m", "\e[0;36mBenchmark:\e[39m"]
-const names    : array[6, string] = ["Trace:", "Debug:","Info: ","Warn: ","Error:", "Benchmark:"]
+const names_std: array[6, string] = ["\e[0;32mTrace:\e[39m","\e[0;32mDebug:\e[39m","\e[0;36m Info:\e[39m","\e[0;33m Warn:\e[39m","\e[0;31mError:\e[39m", "\e[0;36mBenchmark:\e[39m"]
+const names    : array[6, string] = ["Trace", "Debug"," Info"," Warn","Error", "Benchmark"]
 
-const log_template = "$# $# [$#] $#$#"
-const log_template_std = "$# [$#] $#$#"
+const log_template = "$# $# $#$#"
+const log_template_std = "$# $#$#"
 const log_template_std_trace = "$#, $#$#$#"
 const log_template_bench = "$# $#\n$#\n" 
 const log_template_std_bench = "$#\n$#\n" 
@@ -72,8 +69,9 @@ proc px_trace_send(lvl: uint8 = 0, args: varargs[string, `$`]) =
   else: msg.t_stack = getStackTraceEntries()
   for arg in args:
     msg.t_txt.add arg
-    msg.t_txt.add "\n"
+    #msg.t_txt.add "\n"
   channel.send msg
+
 proc px_log_send(lvl: uint8 = 0, code: string, line: int, args: varargs[string, `$`]) = 
   var msg = Msg(kind: Write)
   msg.w_lvl = lvl
@@ -108,12 +106,15 @@ proc px_log_execute() {.thread.} =
         time_prev = time_new
         time_str = local(time_new).format "HH:mm:ss"
       
-      var text_log = log_template % [time_str,names[msg.w_lvl],msg.w_code,"",msg.w_txt]
-      var text_log_std = log_template_std % [names_std[msg.w_lvl],msg.w_code,"",msg.w_txt]
+      var text_log = ""
+      var text_log_std =""
       if msg.w_lvl == lv_bench: 
         text_log = log_template_bench % [time_str,names[msg.w_lvl],msg.w_txt]
         text_log_std = log_template_std_bench % [names_std[msg.w_lvl],msg.w_txt]
-      
+      else:
+        text_log = log_template % [time_str,names[msg.w_lvl],"",msg.w_txt]
+        text_log_std= log_template_std % [names_std[msg.w_lvl],"",msg.w_txt]
+
       for i in 1..logs.high:
         let log = logs[i].addr
         log.file.write text_log
@@ -136,10 +137,10 @@ proc px_log_execute() {.thread.} =
       var text_log = ""
       var text_log_std = ""
       var text_trace = ""
-      
-      if (msg.t_lvl == lv_trace):
-        text_log = &"{time_str} {names[msg.t_lvl]} {msg.t_txt}"
-        text_log_std = &"{names_std[msg.t_lvl]} {msg.t_txt}"
+ 
+      if (msg.t_lvl == lv_trace or msg.t_lvl == lv_error):
+        text_log = &"{time_str} {names[msg.t_lvl]} {msg.t_txt}\n"
+        text_log_std = &"{names_std[msg.t_lvl]} {msg.t_txt}\n"
         var sym = "⯆"
         for i in 0..msg.t_stack.high-1:
           var n  =  msg.t_stack[i]
@@ -150,11 +151,11 @@ proc px_log_execute() {.thread.} =
         text_log.add(text_trace)
         text_log_std.add(text_trace)
       else:
-        text_log = &"{time_str} {names[msg.t_lvl]} {msg.t_txt}"
-        text_log_std = &"{names_std[msg.t_lvl]} {msg.t_txt}"
+        text_log = &"{time_str} {names[msg.t_lvl]} {msg.t_txt} "
+        text_log_std = &"{names_std[msg.t_lvl]} {msg.t_txt} "
         var n  =  msg.t_stack[0]
         text_trace.add(&"⯈ {n.filename} ({n.line}) {n.procname}\n")
-    
+
         text_log.add(text_trace)
         text_log_std.add(text_trace)
 
@@ -186,35 +187,39 @@ proc px_log_execute() {.thread.} =
   #   trace_text.add(arg)
 
   # echo trace_text
-proc add*(self: Log, file_name: string) =
+proc logAdd*(file_name: string) =
   if file_name == "":
     echo "no file"
     return
   px_log_add(open(file_name,fmWrite))
 
-template trace*(self: Log, args: varargs[string, `$`]) =
+template log*(args: varargs[string, `$`]) =
+  DEBUG_MODE:
+    px_trace_send(lv_debug, args)
+template logTrace*(args: varargs[string, `$`]) =
   DEBUG_MODE:
     px_trace_send(lv_trace, args)
 
-template debug*(self: Log, args: varargs[string, `$`]) =
-  DEBUG_MODE:
-    px_trace_send(lv_debug, args)
+# template logDebug*(args: varargs[string, `$`]) =
+#   DEBUG_MODE:
+#     px_trace_send(lv_debug, args)
 
-template info*(self: Log, args: varargs[string, `$`]) =
+template logInfo*(args: varargs[string, `$`]) =
     const module = instantiationInfo()
     px_log_send(lv_info, module.filename[0 .. ^5], module.line, args)
 
-template warn*(self: Log, args: varargs[string, `$`]) =
+template logWarn*(args: varargs[string, `$`]) =
     const module = instantiationInfo()
     px_log_send(lv_warn, module.filename[0 .. ^5], module.line, args)
 
-template error*(self: Log, args: varargs[string, `$`]) =
-    const module = instantiationInfo()
-    px_log_send(lv_error, module.filename[0 .. ^5], module.line, args)
-
-template benchmark*(self: Log, args: varargs[string, `$`]) =
-    const module = instantiationInfo()
+template logBench*(args: varargs[string, `$`]) =
     px_log_send(lv_bench, "", 0, args)
+
+template logError*( args: varargs[string, `$`]) =
+    px_trace_send(lv_error, args)
+
+
+#proc `log`*(args: varargs[string, `$`]) = discard
 
 
 

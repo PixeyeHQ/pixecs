@@ -1,24 +1,31 @@
 import utils/actors_log
+import utils/actors_profile
 #import utils/actors_log_old
-#i#mport utils/actors_profile
 
 #log.trace "me"
 
-log.add "app.log"
-
+logAdd "app.log"
+import random
 proc Tester() =
-  log.trace "me"
+  logError "Invalid alpaca id"
 
-Tester()
-# log.trace "pony" 
-# log.info "pon2y"
-# log.info "pony master"
-# log.info "pony master", "sequa", "alpaca" 
-log.debug "pinya"
-log.info "alpaca"
-log.warn "OPA"
-log.error "ERR"
+proc GetDamage =
+  logTrace "Get Damage"
 
+proc AlpacaHit =
+  GetDamage()
+
+
+log_info "Game started!"
+log_warn "Something is wrong"
+log "Alpaca is created"
+log "Alpaca is moving"
+
+profileStart "Bench mk1":
+  AlpacaHit()
+  Tester()
+
+profileLog()
 #log.benchmark "DSFSD":
 
 # for i in 0..100:

@@ -1,0 +1,8 @@
+07:47:45 Trace: me
+⯆ c:\Users\Pixeye\projects\pixecs\tests\test.nim (12) test
+⯈ c:\Users\Pixeye\projects\pixecs\tests\test.nim (10) Tester
+07:47:45 Debug: pinya
+⯈ c:\Users\Pixeye\projects\pixecs\tests\test.nim (17) test
+07:47:45 Info:  [test] alpaca
+07:47:45 Warn:  [test] OPA
+07:47:45 Error: [test] ERR

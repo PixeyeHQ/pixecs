@@ -1,10 +1,15 @@
-22:04:44 Info:  [pixecs_bench] Initialize ecs fo 1 000 000 entities
-22:04:44 Trace: This is a TEST
-⯆ c:\Users\Pixeye\projects\pixecs\tests\pixecs_bench.nim (79) pixecs_bench
-⯆ c:\Users\Pixeye\projects\pixecs\tests\pixecs_bench.nim (77) test
-⯈ c:\Users\Pixeye\projects\pixecs\tests\pixecs_bench.nim (75) test2
-22:04:44 Benchmark:
-⯈ Entity Release [1comp]: 0.000008400s
-⯈ Entity Create  [1comp]: 0.000014500s
+12:17:36  Info Game started!
+12:17:36  Warn Something is wrong
+12:17:36 Debug Alpaca is created ⯈ c:\Users\Pixeye\projects\pixecs\tests\test.nim (21) test
+12:17:36 Debug Alpaca is moving ⯈ c:\Users\Pixeye\projects\pixecs\tests\test.nim (22) test
+12:17:36 Trace Get Damage
+⯆ c:\Users\Pixeye\projects\pixecs\tests\test.nim (25) test
+⯆ c:\Users\Pixeye\projects\pixecs\tests\test.nim (16) AlpacaHit
+⯈ c:\Users\Pixeye\projects\pixecs\tests\test.nim (13) GetDamage
+12:17:36 Error Invalid alpaca id
+⯆ c:\Users\Pixeye\projects\pixecs\tests\test.nim (26) test
+⯈ c:\Users\Pixeye\projects\pixecs\tests\test.nim (10) Tester
+12:17:36 Benchmark
+⯈ Bench mk1: 0.000021300s
 
 

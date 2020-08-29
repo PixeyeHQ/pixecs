@@ -15,9 +15,9 @@ type TagHit* = distinct int
 # The size of entities doesn't change so allocate as much as you need.
 # Also keep in mind that in this ecs there is no 'WORLD' concept. You have only one registry.
 # This is may change in future but I don't see the point for multiword stuff right now.  
-log.add "app.log"
+logadd "app.log"
 ecsInit(1) 
-log.info "Initialize ecs fo 1 000 000 entities"
+logInfo "Initialize ecs fo 1 000 000 entities"
 # Register components
 
 ecsAdd CompA
@@ -72,7 +72,7 @@ for x in 0..<1:
   entity_create_one_comp()
   entity_kill_one_comp()
 
-proc test2() = log.trace "This is a TEST"
+proc test2() = logTrace "This is a TEST"
 
 proc test() = test2()
 
