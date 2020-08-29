@@ -69,21 +69,15 @@ var players {.used.} = ecsGroup(CompA,!CompB)
 var everyone {.used.} = ecsGroup(CompA)
 
 
-for x in 0..<1:
+for x in 0..<25:
   entity_create_one_comp()
   entity_kill_one_comp()
+  entity_create_two_comp()
+  iterate_group()
+  iterate_query()
+  iterate_query_with_ent()
+  ecsRelease()
 
-proc test2() = logTrace "This is a TEST"
-
-proc test() = test2()
-
-test()
-
-  # entity_create_two_comp()
-  # iterate_group()
-  # iterate_query()
-  # iterate_query_with_ent()
-  # ecsRelease()
 
 
 profileLog()
