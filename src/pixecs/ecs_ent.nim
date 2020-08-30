@@ -82,21 +82,20 @@ proc release*(self: ent|eid) {.inline.} =
 
 proc ecsRelease*() =
   template empty(meta: ptr EntMeta, id: int)=
-      FREE_ENTS += 1
-      px_ecs_incAge(px_ecs_ents[id].age)
-      system.swap(px_ecs_ents[id],px_ecs_ents[AMOUNT_ENTS-FREE_ENTS])
+      px_ecs_ents[id].age = 1
       meta.sig.setLen(0)
       meta.sig_groups.setLen(0)
       meta.parent = ent.nil.eid
       meta.childs.setLen(0)
- #clean groups
+  #clean groups
   for g in px_ecs_groups:
     g.ents.setLen(0)
- #find all entities on the layer and release them
+  #find all entities on the layer and release them
   for i in 0..px_ecs_meta.high:
     let meta = px_ecs_meta[i].addr
     empty(meta,i)
- #clean storages
+  FREE_ENTS = AMOUNT_ENTS
+  #clean storages
   for st in px_ecs_meta_comp:
     st.actions.cleanup()
 
