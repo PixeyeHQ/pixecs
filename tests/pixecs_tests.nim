@@ -6,16 +6,17 @@ import utils/actors_log
 
 type CompA = object
   arg: int
+type CompB = object
+  arg: int
 type TagB = distinct int
 
-
 ecsInit(100)
-ecsAdd CompA  
+
+ecsAdd CompA
+ecsAdd CompB
 ecsAdd TagB, AsTag
 
-
-
-var group = ecsGroup(CompA)
+var group {.used.} = ecsGroup(CompA)
 
 suite "Pixeye Ecs":
   setup:
@@ -24,6 +25,10 @@ suite "Pixeye Ecs":
   test "Entity default don't exist":
     var entity = ent.default
     check(entity.exist==false)
+  test "Entity create [ecsCreate]":
+    var entity = ecsCreate()
+    entity.bind()
+    check(entity.exist)
   test "Entity create [ecsEntity]":
     var entity: ent
     ecsEntity:
@@ -33,6 +38,32 @@ suite "Pixeye Ecs":
     ecsEntity entity:
       discard
     check(entity.exist)
+  test "Entity default don't have components":
+    var entity = ent.default
+    check(entity.has(CompA)==false)
+  test "Entity add component [CompA]":
+    ecsEntity entity:
+      var ca {.used.} = e.get CompA
+    check(entity.has CompA)
+  test "Entity try get component [CompA]":
+    ecsEntity entity:
+      var ca {.used.} = e.get CompA
+    var valid = false
+    entity.tryGet(CompA):
+      ca.arg-=1
+      valid = true
+    check(valid == true)
+  test "Entity release":
+    ecsEntity entity:
+      var ca {.used.} = e.get CompA
+    entity.release()
+    check(entity.exist==false)
+  test "Entity released don't have components":
+    ecsEntity entity:
+      var ca {.used.} = e.get CompA
+    entity.release()
+    check(entity.has(CompA)==false)
+    
     # var entity: ent
     # ecsEntity:
     #   entity = e
