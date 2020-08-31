@@ -112,18 +112,15 @@ Good enough for any types of games I hope. It's relatively fast and way faster t
 You can build benchmark with ```nimble bench``` to get some info.
 
 
-Reference results:
-Working station: AMD Ryzen 5 2600X, 16336MB RAM  
 #### Reference
----
-Entities amount: 1_000_000
-
-| Description   | Measurement                        |
-|---------------|------------------------------------|
-| Create Empty  | 0.001576                           |
-| Create 1 comp | 0.0358798                          |
-| Create 2 comp | 0.05099                            |
-| Release       | 0.0015519                          |
+Working station: AMD Ryzen 5 2600X, 16336MB RAM  
+Entities amount: 1000000
+| Description     | Measurement                        |
+|-----------------|------------------------------------|
+| Create Empty    | 0.001576                           |
+| Create 1 comp   | 0.0358798                          |
+| Create 2 comp   | 0.05099                            |
+| Deletion 1 comp | 0.0015519                          |
 
 ### 💬 Credits
 Developed by Dmitry Mitrofanov and every direct or indirect contributors to the GitHub.     
