@@ -16,8 +16,9 @@ ecsAdd CompA
 ecsAdd CompB
 ecsAdd TagB, AsTag
 
-var group {.used.} = ecsGroup(CompA)
-
+var groupA  {.used.} = ecsGroup(CompA)
+var groupB  {.used.} = ecsGroup(CompB)
+var groupAB {.used.} = ecsGroup(CompA,CompB)
 suite "Pixeye Ecs":
   setup:
     if FREE_ENTS != AMOUNT_ENTS:
@@ -63,47 +64,63 @@ suite "Pixeye Ecs":
       var ca {.used.} = e.get CompA
     entity.release()
     check(entity.has(CompA)==false)
-    
-    # var entity: ent
-    # ecsEntity:
-    #   entity = e
-    # check(entity.exist)
-    # for x in 0..<AMOUNT_ENTS:
-    #   ecs_entity:
-    #     let ca {.used.} = e.get CA
-    #     e.inc TagB
-    # check(FREE_ENTS==0)
-  # test "No Group Duplicates":
-  #   check(group==ecsGroup(CompA))
-  # test "Kill all entities":
-  #   for e in ecsAll():
-  #     e.release
-  #   check(FREE_ENTS==AMOUNT_ENTS)
-  # test "Groups are cleaned":
-  #   check(group.ents.len==0)
-  # test "Entity ver changed":
-  #   var temp_e :ent = (0,0)
-  #   ecs_entity:
-  #     temp_e = e
-  #     let ca {.used.} = e.get CompA
-  #   temp_e.release
-  #   ecs_entity another:
-  #     let ca {.used.} = e.get CompA
-  #   check(another.age!=temp_e.age)
-  #   another.release
-  # test "Entity killed without components":
-  #   ecs_entity another:
-  #     let ca {.used.} = e.get CompA
-  #   another.remove CompA
-  #   check(another.exist==false)
-  # test "Increment tag by 10":
-  #   ecs_entity another:
-  #     another.inc TagB, 10
-  #   check(another.tagB == 10)
-  #   another.release
-  # test "Remove tag when it's value = 0":
-  #   ecsEntity another:
-  #     another.inc TagB, 10
-  #   another.dec TagB, 10
-  #   check(another.has(TagB)==false)
-    
+  test "Entity get released when last component is removed":
+    ecsEntity entity:
+      var ca {.used.} = e.get CompA
+    entity.remove CompA
+    check(entity.exist==false)
+  test "Entity age changes":
+    var temp_e = ecsCreate()
+    temp_e.release()
+    var temp_e2 = ecsCreate()
+    check(temp_e.id==temp_e2.id)
+    check(temp_e.age!=temp_e2.age)
+  test "Entity is added to a group [GroupA]":
+    ecsEntity entity:
+      var ca {.used.} = e.get CompA
+    check(groupA.len==1)
+    check(groupA[0]==entity)
+    check(groupB.len==0)
+  test "Entity released is removed from all accompanying groups [GroupA,GroupB,GroupAB]":
+    ecsEntity entity:
+      var ca {.used.} = e.get CompA
+      var cb {.used.} = e.get CompB
+    check(groupA.len==1 and groupB.len==1 and groupAB.len==1)
+    check(groupA[0]==entity and groupB[0]==entity and groupAB[0]==entity)
+    entity.release()
+    check(groupA.len==0 and groupB.len==0 and groupAB.len==0)
+  test "Entity add tag 5 times [TagB]":
+    ecsEntity entity:
+      e.inc TagB, 5
+    check(entity.has TagB)
+    check(entity.tagB==5)
+  test "Entity removes tag if tag size is zero [TagB]":
+    ecsEntity entity:
+      e.inc TagB, 5
+    check(entity.has TagB)
+    check(entity.tagB==5)
+    entity.dec TagB, 5
+    check(entity.has(TagB)==false)
+    check(entity.exist==false)
+  test "Group Iteration, increment value in a component [CompA,10]":
+    ecsEntity entity:
+      let ca {.used.} = e.get CompA
+    while entity.ca.arg < 10:
+      for e in groupA:
+        let ca = e.compa
+        ca.arg+=1
+    check(entity.ca.arg==10)
+  test "Group Iteration, release entity while iterating":
+    ecsEntity entity:
+      let ca {.used.} = e.get CompA
+    ecsEntity entity2:
+      let ca {.used.} = e.get CompA
+    while entity2.ca.arg < 10:
+      for e in groupA:
+        let ca = e.compa
+        ca.arg+=1
+        if ca.arg==1 and e == entity:
+          e.release()
+    check(entity2.compa.arg==10)
+    check(entity.exist==false)
+    check(groupB.len==0)
