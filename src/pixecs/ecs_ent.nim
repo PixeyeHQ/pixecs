@@ -43,7 +43,7 @@ template ecsEntity*(name: untyped, code: untyped): untyped =
     code
     ecs_group.bind(name.id.eid)
 
-proc ecsCreate*(): ent =
+proc ecsCreate*(): ent {.inline,discardable,} =
   ##Create an enity. Call ecs.bind afrter creating and setting up components.
   ##Alternative: use entity template to create an entity.
   px_ecs_ent()

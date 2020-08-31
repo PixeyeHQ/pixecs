@@ -4,8 +4,9 @@ A pragmatic entity-component-system ([ECS](https://en.wikipedia.org/wiki/Entity_
 [![Twitter Follow](https://img.shields.io/twitter/follow/PixeyeHQ?color=blue&label=Follow%20on%20Twitter&logo=%20&logoColor=%20&style=flat-square)](https://twitter.com/PixeyeHQ)
 [![Discord](https://img.shields.io/discord/320945300892286996.svg?label=Discord)](http://discord.pixeye.games)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/PixeyeHQ/pixecs/blob/master/LICENSE)
-[![stars](https://img.shields.io/github/stars/PixeyeHQ/pixecs?style=social)](https://github.com/PixeyeHQ/pixecs/stargazers)
 [![Build Status](https://travis-ci.com/PixeyeHQ/pixecs.svg?branch=master)](https://travis-ci.com/PixeyeHQ/pixecs)
+[![stars](https://img.shields.io/github/stars/PixeyeHQ/pixecs?style=social)](https://github.com/PixeyeHQ/pixecs/stargazers)
+
 
 ### Introduction
 This project is a part of my future gamedev tech-stack on language called [Nim](https://nim-lang.org/), a powerful language with great promise for gamedev. Pixecs is an independant module so it can be used seperately. It's a ongoing project so there will be more changes and info in the future.
@@ -106,28 +107,23 @@ player.compHealth.val = 10 # valid long name alias. It's the same name as type b
 > 💡 *The short alias is generated only if you use Component or Comp in the name of a type. This is a part of my style how to write code and I don't force people to write like that.*
 
 
-
 ### ⚡ Performance
 Good enough for any types of games I hope. It's relatively fast and way faster then my previous [framework](https://github.com/PixeyeHQ/actors.unity) designed for Unity. 
 You can build benchmark with ```nimble bench``` to get some info.
 
-My results:
-Create 1_000_000 entities with components.
-```
-Time elapsed for Create Entity + one comp: 0.047000000 seconds
-Time elapsed for Create Entity + two comp + group: 0.104000000 seconds
-```
-Kill 1_000_000 entities with components.
-```
-Time elapsed for Kill Entity with one comp: 0.035000000 seconds
-```
-Iterate 1_000_000 entities via group/query
-```
-Time elapsed for iterate group: 0.004000000 seconds
-Time elapsed for iterate query: 0.002000000 seconds
-Time elapsed for iterate query with ent: 0.002000000 seconds
-```
+
+Reference results:
 Working station: AMD Ryzen 5 2600X, 16336MB RAM  
+#### Reference
+---
+Entities amount: 1_000_000
+
+| Description   | Measurement                        |
+|---------------|------------------------------------|
+| Create Empty  | 0.001576                           |
+| Create 1 comp | 0.0358798                          |
+| Create 2 comp | 0.05099                            |
+| Release       | 0.0015519                          |
 
 ### 💬 Credits
 Developed by Dmitry Mitrofanov and every direct or indirect contributors to the GitHub.     
