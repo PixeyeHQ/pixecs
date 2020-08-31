@@ -5,7 +5,7 @@ A pragmatic entity-component-system ([ECS](https://en.wikipedia.org/wiki/Entity_
 [![Discord](https://img.shields.io/discord/320945300892286996.svg?label=Discord)](http://discord.pixeye.games)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/PixeyeHQ/pixecs/blob/master/LICENSE)
 [![stars](https://img.shields.io/github/stars/PixeyeHQ/pixecs?style=social)](https://github.com/PixeyeHQ/pixecs/stargazers)
- 
+[![Build Status](https://travis-ci.com/PixeyeHQ/pixecs.svg?branch=master)](https://travis-ci.com/PixeyeHQ/pixecs)
 
 ### Introduction
 This project is a part of my future gamedev tech-stack on language called [Nim](https://nim-lang.org/), a powerful language with great promise for gamedev. Pixecs is an independant module so it can be used seperately. It's a ongoing project so there will be more changes and info in the future.

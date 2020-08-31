@@ -1,0 +1,41 @@
+os: linux
+dist: bionic
+language: c
+
+matrix:
+  include:
+    # Linux - amd64
+    - env: BRANCH=1.2.6
+    - env: BRANCH=devel
+
+    ## Uncomment to test on Linux - arm64
+    # - arch: arm64
+    #   env: BRANCH=1.2.6
+
+    ## Uncomment to test on Linux - ppc64
+    # - arch: ppc64le
+    #   env: BRANCH=1.2.6
+
+    # macOS - amd64
+    - os: osx
+      env: BRANCH=1.2.6
+    - os: osx
+      env: BRANCH=devel
+
+    # windows - amd64
+    - os: windows
+      env: BRANCH=1.2.6
+    - os: windows
+      env: BRANCH=devel
+
+cache:
+  directories:
+    - "$HOME/.choosenim" # cache nim binaries
+
+install:
+  - curl https://raw.githubusercontent.com/genotrance/nim-travis/master/travis.sh -LsSf -o travis.sh
+  - source travis.sh
+
+script:
+  - nimble develop -y
+  - nimble test
