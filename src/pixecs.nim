@@ -2,6 +2,7 @@
 ##
 ## Entity-Component-System (ECS) module.
 
+{.used.}
 
 import pixecs/ecs_h
 import pixecs/ecs_ent
