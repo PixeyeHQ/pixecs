@@ -4,6 +4,7 @@
 import strutils
 import macros
 import ecs_h
+import ecs_debug
 
 var next_storage_id = 0
 

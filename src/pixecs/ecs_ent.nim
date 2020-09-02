@@ -5,6 +5,7 @@ import macros
 import strutils
 
 import ecs_h
+import ecs_debug
 import ecs_group
 
 var e1 {.global.} : ptr ent
@@ -20,13 +21,13 @@ template px_ecs_ent(): untyped =
   # 0,0 1,2 
   # 0,2 1,0 (swap age), inject ents[e2.id]
   # 1,2,0,0 (swap id)
-  e1 = px_ecs_ents[AMOUNT_ENTS-FREE_ENTS].addr
+  e1 = px_ecs_ents[ENTITY_BATCH-ENTITY_FREE].addr
   e2 = px_ecs_ents[e1.id].addr 
-  FREE_ENTS -= 1
+  ENTITY_FREE -= 1
   swap(e1,e2)
   
 
-template ecsEntity*(code: untyped) =
+template entity*(code: untyped) =
   px_ecs_ent()
   block:
     let e {.inject,used.} : ent = (e1.id,e2.age) #(e1.id,e2.age)
@@ -34,7 +35,7 @@ template ecsEntity*(code: untyped) =
     code
     ecs_group.bind(e.id.eid)
 
-template ecsEntity*(name: untyped, code: untyped): untyped =
+template entity*(name: untyped, code: untyped): untyped =
   px_ecs_ent()
   let name {.inject,used.} : ent = (e1.id,e2.age) #ents[e2.id]
   block:
@@ -43,7 +44,7 @@ template ecsEntity*(name: untyped, code: untyped): untyped =
     code
     ecs_group.bind(name.id.eid)
 
-proc ecsCreate*(): ent {.inline,discardable,} =
+proc getEntity*(): ent =
   ##Create an enity. Call ecs.bind afrter creating and setting up components.
   ##Alternative: use entity template to create an entity.
   px_ecs_ent()
@@ -61,9 +62,9 @@ proc px_ecs_empty*(meta: ptr EntMeta, self: eid) {.inline,used.} =
   for i in countdown(meta.sig.high,0):
     px_ecs_meta_comp[meta.sig[i].int].actions.remove(self)
 
-  FREE_ENTS += 1
+  ENTITY_FREE += 1
   px_ecs_incAge(px_ecs_ents[self.int].age)
-  system.swap(px_ecs_ents[self.int],px_ecs_ents[AMOUNT_ENTS-FREE_ENTS])
+  system.swap(px_ecs_ents[self.int],px_ecs_ents[ENTITY_BATCH-ENTITY_FREE])
   meta.sig.setLen(0) 
   meta.sig_groups.setLen(0)
   meta.parent = ent.nil.id.eid
@@ -94,7 +95,7 @@ proc ecsRelease*() =
   for i in 0..px_ecs_meta.high:
     let meta = px_ecs_meta[i].addr
     empty(meta,i)
-  FREE_ENTS = AMOUNT_ENTS
+  ENTITY_FREE = ENTITY_BATCH
   #clean storages
   for st in px_ecs_meta_comp:
     st.actions.cleanup()

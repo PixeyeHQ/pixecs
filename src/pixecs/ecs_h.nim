@@ -2,9 +2,10 @@ import macros
 import strutils
 import strformat
 
-var PX_ECS_DEFAULT_GROUP_SIZE* = 0
-var AMOUNT_ENTS*  = 0
-var FREE_ENTS*    = 0
+const ENTITY_BATCH* {.intdefine.}: int = 0
+
+var PX_ECS_DEFAULT_GROUP_SIZE*  = 0
+var ENTITY_FREE*                  = 0
 
 #----------------------------------------
 #@types
@@ -82,7 +83,7 @@ proc meta*(self: eid): ptr EntMeta {.inline.} =
   px_ecs_meta[self.int].addr
 
 proc px_ecs_genIndices*(self: var seq[int]) {.used.} =
-  self = newSeq[int](AMOUNT_ENTS)
+  self = newSeq[int](ENTITY_BATCH)
   for i in 0..self.high:
     self[i] = ent.nil.id
 
@@ -153,27 +154,3 @@ macro px_ecs_format_getCompAlias*(t: typedesc): untyped {.used.}=
         """)
 
   result = parseStmt(source)
-
-#----------------------------------------
-#@debugger
-#----------------------------------------
-
-when defined(debug):
-  type
-    EcsError* = object of ValueError
-
-template px_ecs_debug_remove*(self: ent|eid, st_indices: ptr seq[int],st_ents: ptr seq[eid], t: typedesc): untyped {.used.}=
-  when defined(debug):
-    block:
-      let arg1 {.inject.} = $t
-      let arg2 {.inject.} = self.id
-      if st_indices[][self.id] < st_ents[].len:
-        raise newException(EcsError,&"\n\nYou are trying to remove a {arg1} that is not attached to entity with id {arg2}\n")
-
-template px_ecs_debug_release*(self: ent|eid): untyped {.used.} =
-  when defined(debug):
-    block:
-      let arg1 {.inject.} = self.id
-      let arg2 {.inject.} = &"\n\nYou are trying to release an empty entity with id {arg1}. Entities without any components are released automatically.\n"
-      if px_ecs_meta[self.id].sig.len == 0:
-        raise newException(EcsError,arg2)
