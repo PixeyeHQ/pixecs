@@ -1,3 +1,7 @@
+# Archived
+For learning purpose I leave code as it is. It was one of my first attempts to make something on Nim. This ecs implementation is rough on edges and might not work as expected. The next iteration of pixecs will be included in little game engine I'm currently working on in Nim language. 
+
+
 # pixecs 🚀
 A pragmatic entity-component-system ([ECS](https://en.wikipedia.org/wiki/Entity_component_system)) module for my gamedev needs.
 
@@ -6,9 +10,6 @@ A pragmatic entity-component-system ([ECS](https://en.wikipedia.org/wiki/Entity_
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/PixeyeHQ/pixecs/blob/master/LICENSE)
 [![Build Status](https://travis-ci.com/PixeyeHQ/pixecs.svg?branch=master)](https://travis-ci.com/PixeyeHQ/pixecs)
 [![stars](https://img.shields.io/github/stars/PixeyeHQ/pixecs?style=social)](https://github.com/PixeyeHQ/pixecs/stargazers)
-# Archived
-For learning purpose I leave code as it is. It was one of my first attempts to make something on Nim. This ecs implementation is rough on edges and might not work as expected. The next iteration of pixecs will be included in little game engine I'm currently working on in Nim language. 
-
 
 ### Introduction
 This project is a part of my future gamedev tech-stack on language called [Nim](https://nim-lang.org/), a powerful language with great promise for gamedev. Pixecs is an independant module so it can be used seperately. It's a ongoing project so there will be more changes and info in the future.
