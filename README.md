@@ -6,6 +6,8 @@ A pragmatic entity-component-system ([ECS](https://en.wikipedia.org/wiki/Entity_
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/PixeyeHQ/pixecs/blob/master/LICENSE)
 [![Build Status](https://travis-ci.com/PixeyeHQ/pixecs.svg?branch=master)](https://travis-ci.com/PixeyeHQ/pixecs)
 [![stars](https://img.shields.io/github/stars/PixeyeHQ/pixecs?style=social)](https://github.com/PixeyeHQ/pixecs/stargazers)
+# Archived
+For learning purpose I leave code as it is. It was one of my first attempts to make something on Nim. This ecs implementation is rough on edges and might not work as expected. The next iteration of pixecs will be included in little game engine I'm currently working on in Nim language. 
 
 
 ### Introduction
